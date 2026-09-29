@@ -1,0 +1,55 @@
+name: Build game
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # also allows running it manually from the Actions tab
+
+env:
+  GODOT_VERSION: "4.7.2" # must match the Godot version your project uses
+  GAME_NAME: "chitchat"
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Install Godot and export templates
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+          unzip -q Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          unzip -q Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+          mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
+          rm -rf templates *.zip *.tpz
+
+      - name: Import project assets
+        run: godot --headless --import
+
+      - name: Export Linux
+        run: |
+          mkdir -p build/linux
+          godot --headless --export-release "Linux" build/linux/${GAME_NAME}.x86_64
+
+      - name: Export Windows
+        run: |
+          mkdir -p build/windows
+          godot --headless --export-release "Windows Desktop" build/windows/${GAME_NAME}.exe
+
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.GAME_NAME }}-linux
+          path: build/linux
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.GAME_NAME }}-windows
+          path: build/windows
