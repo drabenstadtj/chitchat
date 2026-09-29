@@ -3,7 +3,8 @@ name: Build game
 on:
   push:
     branches: [main]
-  workflow_dispatch: # also allows running it manually from the Actions tab
+    tags: ["v*"] # pushing a tag like v0.1 also creates a GitHub Release
+  workflow_dispatch:
 
 env:
   GODOT_VERSION: "4.7.2" # must match the Godot version your project uses
@@ -12,6 +13,8 @@ env:
 jobs:
   export:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # needed to create releases
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,3 +56,18 @@ jobs:
         with:
           name: ${{ env.GAME_NAME }}-windows
           path: build/windows
+
+      - name: Zip builds for release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          (cd build/linux && zip -r ../../${GAME_NAME}-linux.zip .)
+          (cd build/windows && zip -r ../../${GAME_NAME}-windows.zip .)
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.GAME_NAME }}-linux.zip
+            ${{ env.GAME_NAME }}-windows.zip
+          generate_release_notes: true
