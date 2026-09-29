@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://bir06tocikwwx"]
+
+[resource]
+default_font_size = 24
+Button/font_sizes/font_size = 36
+LineEdit/font_sizes/font_size = 36

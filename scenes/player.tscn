@@ -1,0 +1,95 @@
+[gd_scene format=3 uid="uid://8jt8rdjdcaci"]
+
+[ext_resource type="Script" uid="uid://brv0msiei2nl3" path="res://assets/scripts/player_controller.gd" id="1_3vyb7"]
+[ext_resource type="Script" uid="uid://b0biuqah214ua" path="res://scenes/hud.gd" id="2_qhqgy"]
+[ext_resource type="Theme" uid="uid://bir06tocikwwx" path="res://assets/themes/theme.tres" id="3_dqkch"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_7i4tb"]
+radius = 0.33
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lnu2h"]
+points = PackedVector3Array(0.30016816, 0.80140126, -0.026267042, -0.31871578, -0.7318153, -0.055112153, -0.32078114, -0.7365085, 0.03277521, 0.3001691, -0.8014038, -0.026267137, -0.05463277, 0.69688934, 0.32274094, -0.114759244, 0.76815706, -0.29208896, 0.1478229, -0.6937945, 0.29237473, 0.090146855, -0.6945536, -0.31500372, -0.29400876, 0.8027708, 0.062763326, -0.17162009, -0.75840753, 0.2658577, 0.20501791, 0.6916061, -0.25593996, 0.25906238, 0.68198866, 0.2022133, -0.17345606, -0.825275, -0.23236471, 0.094315596, 0.97054094, 0.094315596, -0.087768905, -0.9725188, 0.09450101, -0.28210023, 0.6851345, -0.16787763, -0.25594017, 0.69160664, 0.20501807, 0.28499728, -0.6196134, -0.16561653, 0.31750786, -0.62821496, 0.08901171, -0.16787763, -0.6851345, -0.28210023, -0.057271145, 0.97147846, -0.11800638, 0.09345574, -0.9312551, -0.17684679, 0.03277521, 0.7365085, -0.32078114, 0.14782794, 0.6938186, 0.29238477, 0.15275355, -0.89669687, 0.18268909, 0.32271972, 0.6968431, -0.05462892, 0.061212834, -0.6950984, 0.32192007, -0.056952287, 0.9360973, 0.18451534, 0.12269262, 0.8952736, -0.20549722, -0.32078093, 0.7365081, 0.03277519, -0.28026882, -0.65230775, 0.17350684, -0.05511223, -0.73181623, -0.31871623)
+
+[sub_resource type="TorusMesh" id="TorusMesh_7i4tb"]
+inner_radius = 0.1
+outer_radius = 0.2
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_3vyb7"]
+properties/0/path = NodePath("Head:rotation")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[node name="Player" type="CharacterBody3D" unique_id=1066591591]
+script = ExtResource("1_3vyb7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=534562092]
+mesh = SubResource("CapsuleMesh_7i4tb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1169369139]
+shape = SubResource("ConvexPolygonShape3D_lnu2h")
+
+[node name="Head" type="Node3D" parent="." unique_id=2136244443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.70000005, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head" unique_id=1691098132]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3443918)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Head" unique_id=1193029257]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.3)
+mesh = SubResource("TorusMesh_7i4tb")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1216497165]
+replication_config = SubResource("SceneReplicationConfig_3vyb7")
+
+[node name="HUD" type="Control" parent="." unique_id=1075208258]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_qhqgy")
+
+[node name="Crosshair" type="ColorRect" parent="HUD" unique_id=318994471]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ChatLineEdit" type="LineEdit" parent="HUD" unique_id=335759326]
+visible = false
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -34.25
+offset_top = 260.0
+offset_right = 34.25
+offset_bottom = 291.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("3_dqkch")
+
+[node name="ChatBubble" type="Label3D" parent="." unique_id=654736040]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+billboard = 1
